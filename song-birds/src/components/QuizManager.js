@@ -20,8 +20,11 @@ export class QuizManager {
         const randomNumber = Math.floor(Math.random() * categoryBird.length);
         this.currentBird = categoryBird[randomNumber];
 
-        this.uiUpdater.updateBirdList(categoryBird);
+        
+        const playButton = document.querySelector('.play-button');
+        playButton.dataset.audio = this.currentBird.audio;
 
-        console.log(this.currentBird);
+        
+        this.uiUpdater.updateBirdList(categoryBird);
     }
 }
