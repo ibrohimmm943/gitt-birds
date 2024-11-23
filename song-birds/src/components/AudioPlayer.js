@@ -1,14 +1,14 @@
 export class AudioPlayer {
     constructor() {
         this.audio = null;
-        this.updateInterval = null;
+        this.updateInterval = null; // Progressni yangilash uchun interval
     }
 
     toggleAudio(button, progressBar, timeDisplay) {
         if (this.audio && !this.audio.paused) {
             this.audio.pause();
-            button.textContent = "▶️";
-            clearInterval(this.updateInterval);
+            button.textContent = "▶️"; // Tugmani play qilish uchun o'zgartirish
+            clearInterval(this.updateInterval); // Progressni yangilashni to'xtatish
         } else {
             this.playAudio(button, progressBar, timeDisplay);
         }
@@ -18,15 +18,18 @@ export class AudioPlayer {
         if (!this.audio) {
             this.audio = new Audio(button.dataset.audio);
             this.audio.addEventListener("loadedmetadata", () => {
+                // Umumiy davomiylik yuklanganda vaqtni yangilash
                 this.updateProgress(progressBar, timeDisplay);
             });
         }
-        this.audio.play();
-        button.textContent = "❚❚";
 
+        this.audio.play();
+        button.textContent = "❚❚"; // Tugmani pause qilish uchun o'zgartirish
+
+        // Progress bar va vaqtni yangilash
         this.updateInterval = setInterval(() => {
             this.updateProgress(progressBar, timeDisplay);
-        }, 500); 
+        }, 500); // Har 500ms da yangilash
     }
 
     updateProgress(progressBar, timeDisplay) {
@@ -45,7 +48,17 @@ export class AudioPlayer {
         const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
         return `${minutes}:${secs}`;
     }
+
+    playSpecificAudio(audioPath) {
+        // Har bir qushning o'z ovozini ijro etish
+        if (this.audio) {
+            this.audio.pause();
+        }
+        this.audio = new Audio(audioPath);
+        this.audio.play();
+    }
 }
+
 
 
 

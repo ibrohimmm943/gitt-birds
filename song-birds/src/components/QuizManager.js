@@ -8,11 +8,14 @@ export class QuizManager {
         this.uiUpdater = new UIUpdater();
         this.currentCategory = 0;
         this.currentBird = null;
+        this.isAnswered = false;
+        this.score = 0; 
     }
 
     startQuiz() {
         this.initQuestion();
         this.uiUpdater.startQuizUi();
+        this.isAnswered = false;
     }
 
     initQuestion() {
@@ -20,11 +23,52 @@ export class QuizManager {
         const randomNumber = Math.floor(Math.random() * categoryBird.length);
         this.currentBird = categoryBird[randomNumber];
 
-        
         const playButton = document.querySelector('.play-button');
         playButton.dataset.audio = this.currentBird.audio;
 
-        
         this.uiUpdater.updateBirdList(categoryBird);
+
+        this.addBirdSelectionEvent(categoryBird);
+    }
+
+    addBirdSelectionEvent(categoryBird) {
+        const birdOptions = document.querySelectorAll('.bird-option');
+
+        birdOptions.forEach((option) => {
+            option.addEventListener('click', (e) => {
+                if (this.isAnswered) return;
+
+                const selectedBird = e.target.dataset.bird;
+
+                if (selectedBird === this.currentBird.name) {
+                    e.target.classList.add('correct');
+                    this.playFeedbackSound('assets/sounds/correct.mp3');
+                    this.audioPlayer.playSpecificAudio(this.currentBird.audio);
+                    this.isAnswered = true;
+
+                    this.updateScore(1); 
+                } else {
+                    e.target.classList.add('incorrect');
+                    this.playFeedbackSound('assets/sounds/incorrect.mp3');
+
+                    const incorrectBird = categoryBird.find(
+                        (bird) => bird.name === selectedBird
+                    );
+                    this.audioPlayer.playSpecificAudio(incorrectBird.audio);
+                }
+            });
+        });
+    }
+
+    playFeedbackSound(soundPath) {
+        const feedbackSound = new Audio(soundPath);
+        feedbackSound.play();
+    }
+
+    updateScore(points) {
+        this.score += points; 
+        this.uiUpdater.updateScore(this.score); 
     }
 }
+
+
